@@ -2,7 +2,7 @@ name: new_release
 
 on:
   push:
-    branches: [master]
+    branches: [main]
 
 jobs:
   create_release:
