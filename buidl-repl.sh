@@ -1,0 +1,1 @@
+go build -o spheronctl -ldflags="-X 'github.com/theycallmeloki/spheron-cli/cmd/spheron.version=0.0.1'" main.go
