@@ -19,28 +19,29 @@ jobs:
           - goarch: arm64
             goos: windows
     steps:
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
 
-    - name: Read version from release.json
-      uses: notiz-dev/github-action-json-property@release
-      id: spheronctl_version
-      with:
-        path: 'release.json'
-        prop_path: 'version'
+      - name: Read version from release.json
+        uses: notiz-dev/github-action-json-property@release
+        id: spheronctl_version
+        with:
+          path: "release.json"
+          prop_path: "version"
 
-    - name: Read go_version from release.json
-      uses: notiz-dev/github-action-json-property@release
-      id: go_version
-      with:
-        path: 'release.json'
-        prop_path: 'go_version'
+      - name: Read go_version from release.json
+        uses: notiz-dev/github-action-json-property@release
+        id: go_version
+        with:
+          path: "release.json"
+          prop_path: "go_version"
 
-    - name: Build spheronctl binary
-      uses: wangyoucao577/go-release-action@master
-      with:
-        github_token: ${{ secrets.TOKEN }}
-        goos: ${{ matrix.goos }}
-        goarch: ${{ matrix.goarch }}
-        goversion: "https://dl.google.com/go/go${{ steps.go_version.outputs.prop }}.linux-amd64.tar.gz"
-        ldflags: "-X 'github.com/theycallmeloki/spheron-cli/cmd/spheron.version=${{ steps.spheronctl_version.outputs.prop }}'"
+      - name: Build spheronctl binary
+        uses: wangyoucao577/go-release-action@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          goversion: "https://dl.google.com/go/go${{ steps.go_version.outputs.prop }}.linux-amd64.tar.gz"
+          binary_name: "spheronctl"
+          ldflags: "-X 'github.com/theycallmeloki/spheron-cli/cmd/spheron.version=${{ steps.spheronctl_version.outputs.prop }}'"
