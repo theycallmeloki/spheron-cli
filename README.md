@@ -4,15 +4,23 @@ A CLI for Spheron Protocol
 
 TODO
 
-[ ] Organization endpoints
+[x] Configure local with secret 
 
-[ ] Coupon endpoint
+[x] Organization endpoints
+
+[ ] Print a table of reasons for why an organization is overdue
+
+[x] Coupon endpoint
+
+[ ] Coupon - test happy path if one is present (should work, mostly)
 
 [ ] Invites endpoints
 
 [ ] Project - Environment Variables endpoints
 
-[ ] `spheronctl --envfilepath=.env` to automatically import environment variables from `.env`
+[ ] `spheronctl env push --envfilepath=.env` to automatically push deployment environment variables from `.env` to spheron
+
+[ ] `spheronctl env pull .env.local` to automatically pull down local environment variables from spheron
 
 [ ] Project - Deployment Environment endpoints
 
