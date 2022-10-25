@@ -35,13 +35,13 @@ var organizationEditCmd = &cobra.Command{
 		}
 
 		if Name == "" {
-			Name = spheron.SanitizeInput("Organization Name: ")
+			Name = SanitizeInput("Organization Name: ")
 		}
 		if Username == "" {
-			Username = spheron.SanitizeInput("Organization Username: ")
+			Username = SanitizeInput("Organization Username: ")
 		}
 		if Image == "" {
-			Image = spheron.SanitizeInput("Organization Image: ")
+			Image = SanitizeInput("Organization Image: ")
 		}
 
 		fmt.Println("\n")

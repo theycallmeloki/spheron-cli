@@ -17,7 +17,7 @@ var organizationInviteCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		organizationID := viper.GetString("organization")
 		if UserEmail == "" {
-			UserEmail = spheron.SanitizeInput("User Email: ")
+			UserEmail = SanitizeInput("User Email: ")
 		}
 		invite, err := spheron.InviteOrganizationMember(organizationID, UserEmail)
 		if err != nil {

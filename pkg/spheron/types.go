@@ -8,6 +8,10 @@ type Config struct {
 	Secret  			string
 	// Currently active organization that the User is working on
 	Organization	 	string
+	// Project
+	Project 			string
+	// Deployment
+	Deployment 			string
 }
 
 // Scope struct (possibly deprecated)
@@ -125,6 +129,7 @@ type DeleteOrganizationMemberResponse struct {
 
 // environment variables struct 
 type EnvironmentVariables struct {
+	ID		  			   string   `json:"_id,omitempty"`
 	Name                   string   `json:"name"`
 	Value                  string   `json:"value"`
 	DeploymentEnvironments []string `json:"deploymentEnvironments"`
@@ -165,6 +170,8 @@ type Logs struct {
 
 // env struct - (possibly used ?)
 type Env struct {
+	Key  string `json:"key"`
+	Value string `json:"value"`
 }
 
 // screenshot struct
@@ -214,6 +221,8 @@ type Domains struct {
 	ProjectID                string   `json:"projectId"`
 	DeploymentEnvironmentIds []string `json:"deploymentEnvironmentIds"`
 	Version                  string   `json:"version"`
+	CreatedAt                string   `json:"createdAt"`
+	UpdatedAt                string   `json:"updatedAt"`
 }
 
 
@@ -393,6 +402,11 @@ type ProjectConfigurationResponse struct {
 	Configuration Configuration `json:"configuration"`
 }
 
+// create environment variables payload struct 
+type CreateEnvironmentVariablesPayload struct {
+	EnvironmentVariables []EnvironmentVariables `json:"environmentVariables"`
+}
+
 // create environment variables response struct
 type CreateEnvironmentVariablesResponse struct {
 	EnvironmentVariables []EnvironmentVariables `json:"environmentVariables"`
@@ -400,11 +414,11 @@ type CreateEnvironmentVariablesResponse struct {
 
 // update environment variables response struct
 type UpdateEnvironmentVariablesResponse struct {
-	Updated Updated `json:"updated"`
+	Updated UpdatedEnvironmentVariable `json:"updated"`
 }
 
 // updated struct (part of update environment variables response struct)
-type Updated struct {
+type UpdatedEnvironmentVariable struct {
 	ID                     string                   `json:"_id"`
 	Name                   string                   `json:"name"`
 	Value                  string                   `json:"value"`
@@ -423,6 +437,7 @@ type DeploymentEnvironmentsResponse struct {
 
 // result struct (part of deployment environment response struct)
 type Result struct {
+	ID        string   `json:"_id"`
 	Name      string   `json:"name"`
 	Branches  []string `json:"branches"`
 	Status    string   `json:"status"`
@@ -434,6 +449,8 @@ type Result struct {
 // create deployment environment response struct
 type CreateDeploymentEnvironmentResponse struct {
 	NewEnvironment NewEnvironment `json:"newEnvironment"`
+	Message string `json:"message,omitempty"`
+	Error bool `json:"error,omitempty"`
 }
 
 // new environment struct (part of create deployment environment response struct)
@@ -449,17 +466,22 @@ type NewEnvironment struct {
 
 // update deployment environment response struct
 type UpdateDeploymentEnvironmentResponse struct {
-	DeploymentEnvironments DeploymentEnvironments `json:"deploymentEnvironment"`
+	DeploymentEnvironment DeploymentEnvironment `json:"deploymentEnvironment"`
+	Message string `json:"message,omitempty"`
+	Error bool `json:"error,omitempty"`
 }
 
 // delete deployment environment response struct
 type DeleteDeploymentEnvironmentResponse struct {
+	Error bool `json:"error,omitempty"`
 	Message string `json:"message"`
 }
 
 // patch deployment environment response struct
 type PatchDeploymentEnvironmentResponse struct {
 	DeploymentEnvironment DeploymentEnvironment `json:"deploymentEnvironment"`
+	Message string `json:"message,omitempty"`
+	Error bool `json:"error,omitempty"`
 }
 
 // deployment environment struct
@@ -473,23 +495,60 @@ type DeploymentEnvironment struct {
 	UpdatedAt string   `json:"updatedAt"`
 }
 
+// get domains response struct
+type DomainsResponse struct {
+	Domains []Domains `json:"domains"`
+	Message string `json:"message,omitempty"`
+	Error bool `json:"error,omitempty"`
+}
+
+// get one domain response struct (todo - check if this is correct, merge with above if feasible)
+type DomainResponse struct {
+	Domains Domains `json:"domain"`
+	Message string `json:"message,omitempty"`
+	Error bool `json:"error,omitempty"`
+}
+
+// create domain payload struct
+type CreateDomainPayload struct {
+	Link string `json:"link"`
+	Type string `json:"type"`
+	DeploymentEnvironments []string `json:"deploymentEnvironments"`
+	IsLatest bool `json:"isLatest"`
+	Name string `json:"name"`
+}
+
 // create domain response struct
 type CreateDomainResponse struct {
 	Domains Domains `json:"domain"`
+	Message string `json:"message,omitempty"`
+	Error bool `json:"error,omitempty"`
+}
+
+// update domain payload struct
+type UpdateDomainPayload struct {
+	Link string `json:"link"`
+	DeploymentEnvironments []string `json:"deploymentEnvironments"`
+	IsLatest bool `json:"isLatest"`
+	Name string `json:"name"`
 }
 
 // update domain response struct
 type UpdateDomainResponse struct {
 	Domains Domains `json:"domain"`
+	Message string `json:"message,omitempty"`
+	Error bool `json:"error,omitempty"`
 }
 
 // delete domain response struct
 type DeleteDomainResponse struct {
-	DeleteDomain DeleteDomain `json:"domain"`
+	DeleteDomainResult DeleteDomainResult `json:"domain"`
+	Message string `json:"message,omitempty"`
+	Error bool `json:"error,omitempty"`
 }
 
 // delete domain struct
-type DeleteDomain struct {
+type DeleteDomainResult struct {
 	Success bool `json:"success"`
 }
 
@@ -497,11 +556,39 @@ type DeleteDomain struct {
 type VerifyDomainResponse struct {
 	Success bool   `json:"success"`
 	Domains  Domains `json:"domain"`
+	Message string `json:"message,omitempty"`
+	Error bool `json:"error,omitempty"`
 }
+
+// git provider preferences struct (part of project response struct)
+type GitProviderPreferences struct {
+	PrComments 			bool `json:"prComments"`
+	CommitComments 		bool `json:"commitComments"`
+	BuildStatus 		bool `json:"buildStatus"`
+	GithubDeployment 	bool `json:"githubDeployment"`
+}
+
+// create deployment payload struct 
+type CreateDeploymentPayload struct {
+	OrganizationID 			string `json:"organizationId"`
+	GitURL 		   			string `json:"gitUrl"`
+	RepoName	   			string `json:"repoName"`
+	UniqueTopicID  			string `json:"uniqueTopicId"`
+	Configuration Configuration `json:"configuration"`
+	Env 		  			string `json:"env"`
+	Protocol	  			string `json:"protocol"`
+	CreateDefaultWebhook 	bool `json:"createDefaultWebhook"`
+	Provider 				string `json:"provider"`
+	Branch 					string `json:"branch"`
+	GitProviderPreferences GitProviderPreferences `json:"gitProviderPreferences"`
+}
+
 
 // create deployment response struct
 type CreateDeploymentResponse struct {
-	Domains Domains `json:"domain"`
+	DeploymentDomain DeploymentDomain `json:"domain"`
+	Message string `json:"message,omitempty"`
+	Error bool `json:"error,omitempty"`
 }
 
 // logs to capture struct
@@ -544,6 +631,8 @@ type DeploymentDomain struct {
 type DeploymentResponse struct {
 	Deployment Deployment `json:"deployment"`
 	LiveLogs   LiveLogs   `json:"liveLogs"`
+	Message    string `json:"message,omitempty"`
+	Error      bool `json:"error,omitempty"`
 }
 
 // deployment struct
@@ -561,7 +650,7 @@ type Deployment struct {
 	BuildTime                 int           `json:"buildTime"`
 	MemoryUsed                int           `json:"memoryUsed"`
 	Env                       Env           `json:"env"`
-	Project                   string        `json:"project"`
+	Project                   Projects      `json:"project"`
 	Screenshot                Screenshot    `json:"screenshot"`
 	DeploymentInitiator       string        `json:"deploymentInitiator"`
 	Branch                    string        `json:"branch"`
@@ -579,6 +668,15 @@ type Deployment struct {
 type LiveLogs struct {
 }
 
+// authorize deployment payload struct
+type AuthorizeDeploymentPayload struct {
+	Message string `json:"message"`
+	Success bool `json:"success"`
+	Topic string `json:"topic"`
+	DeploymentId string `json:"deploymentId"`
+	ProjectId string `json:"projectId"`
+}
+
 // authorize deployment response struct
 type AuthorizeDeploymentResponse struct {
 	Message      string `json:"message"`
@@ -586,6 +684,7 @@ type AuthorizeDeploymentResponse struct {
 	Topic        string `json:"topic"`
 	DeploymentID string `json:"deploymentId"`
 	ProjectID    string `json:"projectId"`
+	Error      bool `json:"error,omitempty"`
 }
 
 // cancel deployment response struct
@@ -593,6 +692,7 @@ type CancelDeploymentResponse struct {
 	Message  string `json:"message"`
 	Canceled bool   `json:"canceled"`
 	Killing  bool   `json:"killing"`
+	Error      bool `json:"error,omitempty"`
 }
 
 // reploy deployment response struct
@@ -602,9 +702,12 @@ type RedeployDeploymentResponse struct {
 	Topic        string `json:"topic"`
 	DeploymentID string `json:"deploymentId"`
 	ProjectID    string `json:"projectId"`
+	Error      bool `json:"error,omitempty"`
 }
 
 // suggested framework response struct
 type SuggestedFrameworkResponse struct {
 	SuggestedFramework string `json:"suggestedFramework"`
+	Message string `json:"message,omitempty"`
+	Error bool `json:"error,omitempty"`
 }

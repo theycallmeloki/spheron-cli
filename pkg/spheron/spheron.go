@@ -1,6 +1,7 @@
 package spheron
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,11 +11,6 @@ import (
 
 	"github.com/spf13/viper"
 )
-
-var ConfigName string = "spheron"
-var ConfigType string = "json"
-var ConfigDir string
-var ConfigPath string
 
 var SPHERON_BASE_URL string = "https://api-v2.spheron.network"
 
@@ -329,4 +325,863 @@ func InviteOrganizationMember(organizationId string, email string) (Invites, err
 	}
 
 	return inviteOrganizationMember.Invites, nil
+}
+
+// get project endpoint
+func GetProject(projectId string) (Projects, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId
+	method := "GET"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+	req, err := http.NewRequest(method, url, nil)
+
+	var project Projects
+
+	if err != nil {
+		fmt.Println(err)
+		return project, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return project, err
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&project)
+
+	return project, nil
+}
+
+// get project deployments endpoint
+func GetProjectDeployments(projectId string) ([] Deployment, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/deployments"
+	method := "GET"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+	req, err := http.NewRequest(method, url, nil)
+
+	var deployments [] Deployment
+
+	if err != nil {
+		fmt.Println(err)
+		return deployments, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return deployments, err
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&deployments)
+
+	return deployments, nil
+}
+
+// get project deployments count endpoint
+func GetProjectDeploymentsCount(projectId string) (ProjectDeploymentCountResponse, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/deployments/count"
+	method := "GET"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+	req, err := http.NewRequest(method, url, nil)
+
+	var deploymentsCount ProjectDeploymentCountResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return deploymentsCount, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return deploymentsCount, err
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&deploymentsCount)
+
+	return deploymentsCount, nil
+}
+
+// post environment variables endpoint
+func PostEnvironmentVariables(projectId string, environmentVariables [] EnvironmentVariables) ([] EnvironmentVariables, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/environment-variables"
+	method := "POST"
+
+	environmentVariablesPayload := CreateEnvironmentVariablesPayload {
+		EnvironmentVariables: environmentVariables,
+	}
+	payload, err := json.Marshal(environmentVariablesPayload)
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(payload))
+
+	var environmentVariablesResponse CreateEnvironmentVariablesResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return environmentVariablesResponse.EnvironmentVariables, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return environmentVariablesResponse.EnvironmentVariables, err
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&environmentVariablesResponse)
+
+	return environmentVariablesResponse.EnvironmentVariables, nil
+}
+
+// put environment variable endpoint
+func PutEnvironmentVariable(projectId string, environmentVariableId string, environmentVariable EnvironmentVariables) (UpdatedEnvironmentVariable, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/environment-variables/" + environmentVariableId
+	method := "PUT"
+
+	payload, err := json.Marshal(environmentVariable)
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(payload))
+	
+	var environmentVariableResponse UpdateEnvironmentVariablesResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return environmentVariableResponse.Updated, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return environmentVariableResponse.Updated, err
+	}
+
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&environmentVariableResponse)
+
+	return environmentVariableResponse.Updated, nil
+}
+
+// delete environment variable endpoint
+func DeleteEnvironmentVariable(projectId string, environmentVariableId string) (bool, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/environment-variables/" + environmentVariableId
+	method := "DELETE"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, nil)
+
+	var environmentVariableResponse DeleteEnvironmentVariablesResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return environmentVariableResponse.Success, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return environmentVariableResponse.Success, err
+	}
+
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&environmentVariableResponse)
+
+	return environmentVariableResponse.Success, nil
+}
+
+// get deployment environment variables endpoint
+func GetDeploymentEnvironmentVariables(projectId string) ([] DeploymentEnvironment, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/deployment-environments"
+	method := "GET"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+	req, err := http.NewRequest(method, url, nil)
+
+	var deploymentEnvironments [] DeploymentEnvironment
+
+	var deploymentEnvironmentResponse DeploymentEnvironmentsResponse
+	
+	if err != nil {
+		fmt.Println(err)
+		return deploymentEnvironments, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return deploymentEnvironments, err
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&deploymentEnvironmentResponse)
+
+	for _, deploymentEnvironment := range deploymentEnvironmentResponse.Result {
+		createdDeploymentEnvironment := DeploymentEnvironment {
+			ID: deploymentEnvironment.ID,
+			Name: deploymentEnvironment.Name,
+			Branches: deploymentEnvironment.Branches,
+			Status: deploymentEnvironment.Status,
+			Protocol: deploymentEnvironment.Protocol,
+			CreatedAt: deploymentEnvironment.CreatedAt,
+			UpdatedAt: deploymentEnvironment.UpdatedAt,
+		}
+		deploymentEnvironments = append(deploymentEnvironments, createdDeploymentEnvironment)
+	}
+
+	return deploymentEnvironments, nil
+}
+
+// post deployment environment variable endpoint
+func PostDeploymentEnvironmentVariable(projectId string, deploymentEnvironment DeploymentEnvironment) (DeploymentEnvironment, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/deployment-environments"
+	method := "POST"
+
+	payload, err := json.Marshal(deploymentEnvironment)
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(payload))
+
+	var createdDeploymentEnvironment DeploymentEnvironment
+
+	var deploymentEnvironmentVariablesResponse CreateDeploymentEnvironmentResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return createdDeploymentEnvironment, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return createdDeploymentEnvironment, err
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&deploymentEnvironmentVariablesResponse)
+
+	if(deploymentEnvironmentVariablesResponse.Error) {
+		return createdDeploymentEnvironment, errors.New(deploymentEnvironmentVariablesResponse.Message)
+	}
+
+	createdDeploymentEnvironment = DeploymentEnvironment {
+		ID: deploymentEnvironmentVariablesResponse.NewEnvironment.ID,
+		Name: deploymentEnvironmentVariablesResponse.NewEnvironment.Name,
+		Branches: deploymentEnvironmentVariablesResponse.NewEnvironment.Branches,
+		Status: deploymentEnvironmentVariablesResponse.NewEnvironment.Status,
+		Protocol: deploymentEnvironmentVariablesResponse.NewEnvironment.Protocol,
+		CreatedAt: deploymentEnvironmentVariablesResponse.NewEnvironment.CreatedAt,
+		UpdatedAt: deploymentEnvironmentVariablesResponse.NewEnvironment.UpdatedAt,
+	}
+
+	return createdDeploymentEnvironment, nil
+}
+
+// put deployment environment variable endpoint
+func PutDeploymentEnvironmentVariable(projectId string, deploymentEnvironmentId string, deploymentEnvironment DeploymentEnvironment) (DeploymentEnvironment, error) {
+	// TODO: evaluate merging deployment environment with deployment environments (same struct, plural vs singular)
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/deployment-environments/" + deploymentEnvironmentId
+	method := "PUT"
+
+	payload, err := json.Marshal(deploymentEnvironment)
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(payload))
+
+	var deploymentEnvironmentVariablesResponse UpdateDeploymentEnvironmentResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return deploymentEnvironmentVariablesResponse.DeploymentEnvironment, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return deploymentEnvironmentVariablesResponse.DeploymentEnvironment, err
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&deploymentEnvironmentVariablesResponse)	
+
+	if(deploymentEnvironmentVariablesResponse.Error) {
+		return deploymentEnvironmentVariablesResponse.DeploymentEnvironment, errors.New(deploymentEnvironmentVariablesResponse.Message)
+	}
+
+	return deploymentEnvironmentVariablesResponse.DeploymentEnvironment, nil
+}
+
+// delete deployment environment variable endpoint
+func DeleteDeploymentEnvironmentVariable(projectId string, deploymentEnvironmentId string) (bool, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/deployment-environments/" + deploymentEnvironmentId
+	method := "DELETE"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, nil)
+
+	// assume we aren't able to delete it by default, if we dont get an error, we can assume it was deleted
+	successfulDelete := false
+
+	var deploymentEnvironmentResponse DeleteDeploymentEnvironmentResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return successfulDelete, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return successfulDelete, err
+	}
+
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&deploymentEnvironmentResponse)
+
+	if(deploymentEnvironmentResponse.Error) {
+		return successfulDelete, errors.New(deploymentEnvironmentResponse.Message)
+	} else {
+		successfulDelete = true
+	}
+
+	return successfulDelete, nil
+}
+
+// patch deactivate deployment environment variable endpoint
+func DeactivateDeploymentEnvironmentVariable(projectId string, deploymentEnvironmentId string) (DeploymentEnvironment, error) {
+	// TODO: evaluate merging deployment environment with deployment environments (same struct, plural vs singular)
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/deployment-environments/" + deploymentEnvironmentId + "/deactivate"
+	method := "PATCH"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, nil)
+
+	var deploymentEnvironmentResponse PatchDeploymentEnvironmentResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return deploymentEnvironmentResponse.DeploymentEnvironment, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return deploymentEnvironmentResponse.DeploymentEnvironment, err
+	}
+
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&deploymentEnvironmentResponse)
+
+	if(deploymentEnvironmentResponse.Error) {
+		return deploymentEnvironmentResponse.DeploymentEnvironment, errors.New(deploymentEnvironmentResponse.Message)
+	}
+
+	return deploymentEnvironmentResponse.DeploymentEnvironment, nil
+}
+
+// TODO: evaluate merging the two patch endpoints into one, they are the same except for the url
+// though this removes the "thinness" of the sdk, so maybe not
+
+// patch activate deployment environment variable endpoint
+func ActivateDeploymentEnvironmentVariable(projectId string, deploymentEnvironmentId string) (DeploymentEnvironment, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/deployment-environments/" + deploymentEnvironmentId + "/activate"
+	method := "PATCH"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, nil)
+
+	var deploymentEnvironmentResponse PatchDeploymentEnvironmentResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return deploymentEnvironmentResponse.DeploymentEnvironment, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return deploymentEnvironmentResponse.DeploymentEnvironment, err
+	}
+
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&deploymentEnvironmentResponse)
+
+	if(deploymentEnvironmentResponse.Error) {
+		return deploymentEnvironmentResponse.DeploymentEnvironment, errors.New(deploymentEnvironmentResponse.Message)
+	}
+
+	return deploymentEnvironmentResponse.DeploymentEnvironment, nil
+}
+
+// get domains endpoint
+func GetDomains(projectId string) ([]Domains, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/domains"
+	method := "GET"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, nil)
+
+	var domainsResponse DomainsResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return domainsResponse.Domains, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return domainsResponse.Domains, err
+	}
+
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&domainsResponse)
+
+	if(domainsResponse.Error) {
+		return domainsResponse.Domains, errors.New(domainsResponse.Message)
+	}
+
+	return domainsResponse.Domains, nil
+}
+
+// post domain endpoint
+func PostDomain(projectId string, domain CreateDomainPayload) (Domains, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/domains"
+	method := "POST"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	jsonValue, _ := json.Marshal(domain)
+
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(jsonValue))
+
+	var domainResponse CreateDomainResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return domainResponse.Domains, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return domainResponse.Domains, err
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&domainResponse)	
+
+	if(domainResponse.Error) {
+		return domainResponse.Domains, errors.New(domainResponse.Message)
+	}
+
+	return domainResponse.Domains, nil
+}
+
+// get one domain endpoint 
+func GetDomain(projectId string, domainId string) (Domains, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/domains/" + domainId
+	method := "GET"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, nil)
+
+	var domainResponse DomainResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return domainResponse.Domains, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return domainResponse.Domains, err
+	}
+
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&domainResponse)
+
+	if(domainResponse.Error) {
+		return domainResponse.Domains, errors.New(domainResponse.Message)
+	}
+
+	return domainResponse.Domains, nil
+}
+
+// patch domain endpoint
+func PatchDomain(projectId string, domainId string, domain UpdateDomainPayload) (Domains, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/domains/" + domainId
+	method := "PATCH"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	jsonValue, _ := json.Marshal(domain)
+
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(jsonValue))
+
+	var domainResponse UpdateDomainResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return domainResponse.Domains, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return domainResponse.Domains, err
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&domainResponse)	
+
+	if(domainResponse.Error) {
+		return domainResponse.Domains, errors.New(domainResponse.Message)
+	}
+
+	return domainResponse.Domains, nil
+}
+
+// delete domain endpoint
+func DeleteDomain(projectId string, domainId string) (bool, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/domains/" + domainId
+	method := "DELETE"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, nil)
+
+	var domainResponse DeleteDomainResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return domainResponse.DeleteDomainResult.Success, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return domainResponse.DeleteDomainResult.Success, err
+	}
+
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&domainResponse)
+
+	if(domainResponse.Error) {
+		return domainResponse.DeleteDomainResult.Success, errors.New(domainResponse.Message)
+	}
+
+	return domainResponse.DeleteDomainResult.Success, nil
+}
+
+// verify domain endpoint
+func VerifyDomain(projectId string, domainId string) (bool, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/domains/" + domainId + "/verify"
+	method := "PATCH"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, nil)
+
+	var domainResponse VerifyDomainResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return domainResponse.Success, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return domainResponse.Success, err
+	}
+
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&domainResponse)
+
+	if(domainResponse.Error) {
+		return domainResponse.Success, errors.New(domainResponse.Message)
+	}
+
+	return domainResponse.Success, nil
+}
+
+// post deployment endpoint 
+func PostDeployment(projectId string, deployment CreateDeploymentPayload) (DeploymentDomain, error) {
+	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/deployments"
+	method := "POST"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	jsonValue, _ := json.Marshal(deployment)
+
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(jsonValue))
+
+	var deploymentResponse CreateDeploymentResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return deploymentResponse.DeploymentDomain, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return deploymentResponse.DeploymentDomain, err
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&deploymentResponse)	
+
+	if(deploymentResponse.Error) {
+		return deploymentResponse.DeploymentDomain, errors.New(deploymentResponse.Message)
+	}
+
+	return deploymentResponse.DeploymentDomain, nil
+}
+
+// get deployment endpoint
+func GetDeployment(deploymentId string) (Deployment, error) {
+	url := SPHERON_BASE_URL + "/v1/deployment/" + deploymentId
+	method := "GET"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, nil)
+
+	var deploymentResponse DeploymentResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return deploymentResponse.Deployment, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return deploymentResponse.Deployment, err
+	}
+
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&deploymentResponse)
+
+	if(deploymentResponse.Error) {
+		return deploymentResponse.Deployment, errors.New(deploymentResponse.Message)
+	}
+
+	return deploymentResponse.Deployment, nil
+}
+
+// post authorize deployment endpoint
+func PostAuthorizeDeployment(deploymentId string) (bool, error) {
+	url := SPHERON_BASE_URL + "/v1/deployment/" + deploymentId + "/authorize"
+	method := "POST"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, nil)
+
+	var deploymentResponse AuthorizeDeploymentResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return deploymentResponse.Success, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return deploymentResponse.Success, err
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&deploymentResponse)	
+
+	if(deploymentResponse.Error) {
+		return deploymentResponse.Success, errors.New(deploymentResponse.Message)
+	}
+
+	return deploymentResponse.Success, nil
+}
+
+// post cancel deployment endpoint
+func PostCancelDeployment(deploymentId string) (bool, error) {
+	url := SPHERON_BASE_URL + "/v1/deployment/" + deploymentId + "/cancel"
+	method := "POST"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, nil)
+
+	var deploymentResponse CancelDeploymentResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return deploymentResponse.Canceled, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return deploymentResponse.Canceled, err
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&deploymentResponse)	
+
+	if(deploymentResponse.Error) {
+		return deploymentResponse.Canceled, errors.New(deploymentResponse.Message)
+	}
+
+	return deploymentResponse.Canceled, nil
+}
+
+// post redeploy deployment endpoint
+func PostRedeployDeployment(deploymentId string) (bool, error) {
+	url := SPHERON_BASE_URL + "/v1/deployment/" + deploymentId + "/redeploy"
+	method := "POST"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, nil)
+
+	var deploymentResponse RedeployDeploymentResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return deploymentResponse.Success, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return deploymentResponse.Success, err
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&deploymentResponse)	
+
+	if(deploymentResponse.Error) {
+		return deploymentResponse.Success, errors.New(deploymentResponse.Message)
+	}
+
+	return deploymentResponse.Success, nil
+}
+
+// get framework suggestions endpoint (Possibly unused in the CLI)
+func GetFrameworkSuggestions(owner string, branch string, repo string, providerName string, root string) (string, error) {
+	url := SPHERON_BASE_URL + "/v1/framework/suggestions?owner=" + owner + "&branch=" + branch + "&repo=" + repo + "&providerName=" + providerName + "&root=" + root
+	method := "GET"
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, nil)
+
+	var frameworkResponse SuggestedFrameworkResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return frameworkResponse.SuggestedFramework, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return frameworkResponse.SuggestedFramework, err
+	}
+
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&frameworkResponse)
+
+	if(frameworkResponse.Error) {
+		return frameworkResponse.SuggestedFramework, errors.New(frameworkResponse.Message)
+	}
+
+	return frameworkResponse.SuggestedFramework, nil
 }

@@ -6,7 +6,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/theycallmeloki/spheron-cli/pkg/spheron"
 )
 
 var version string = "-DEV_BUILD"
@@ -20,6 +19,10 @@ var spheronAsciiArt = `
         | |                               
         |_|                               
 `
+var ConfigName string = "spheron"
+var ConfigType string = "json"
+var ConfigDir string
+var ConfigPath string
 
 var rootCmd = &cobra.Command{
     Use:  "spheronctl",
@@ -47,9 +50,9 @@ func Execute() {
 func initializeConfig(cmd *cobra.Command) error {
     
     // create a spheron configuration file if it doesn't exist
-    spheron.SetSpheronConfigFile()
+    SetSpheronConfigFile()
 
-    if(!spheron.FileExists(spheron.ConfigPath)) {
+    if(!FileExists(ConfigPath)) {
         fmt.Println(spheronAsciiArt)
         fmt.Println("Welcome to SpheronCTL!")
         fmt.Println("\n")

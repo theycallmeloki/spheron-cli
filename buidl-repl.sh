@@ -37,3 +37,18 @@ echo '----------------------------------------'
 echo 'CMD: spheronctl organization'
 ./spheronctl organization
 echo '----------------------------------------'
+
+echo '----------------------------------------'
+echo 'CMD: spheronctl set --help'
+./spheronctl set --help
+echo '----------------------------------------'
+
+echo '----------------------------------------'
+echo 'CMD: spheronctl set project'
+./spheronctl set project
+echo '----------------------------------------'
+
+echo '----------------------------------------'
+echo 'CMD: spheronctl env push -e=.env.sample'
+./spheronctl env push -e=.env.sample
+echo '----------------------------------------'

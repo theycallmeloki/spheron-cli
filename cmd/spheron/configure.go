@@ -32,7 +32,7 @@ spheronctl configure --secret=<YOUR_SECRET_API_KEY>
 		if Secret == "" {
 			fmt.Println("Enter your secret API key to get started.")
 			fmt.Println("You can create an API key from the Spheron Console. Profile > User Settings > Tokens > Create Token")
-			Secret = spheron.SanitizeInput("Secret API Key: ")
+			Secret = SanitizeInput("Secret API Key: ")
 		}
 
 
@@ -40,7 +40,7 @@ spheronctl configure --secret=<YOUR_SECRET_API_KEY>
 		viper.Set("secret", Secret)
 		// viper.Set("organization", c.organization)
 
-		spheron.WriteLocalConfig()
+		WriteLocalConfig()
 
 		initScope, err := spheron.GetScope()
 		if err != nil {
@@ -57,12 +57,16 @@ spheronctl configure --secret=<YOUR_SECRET_API_KEY>
 		fmt.Println("Organization Name: ", organization.Profile.Name)
 		viper.Set("organization", initScope.Organizations[0].ID)
 
-		spheron.WriteLocalConfig()
+		WriteLocalConfig()
+
+		// setProjectCmd.Run(cmd, []string{}) // turns out to not be a great DX
 
 		fmt.Println("\n")
 		fmt.Println("Configuration complete! You can now use the CLI without specifying your secret key / organization.")
 		fmt.Println("Hint: You can use spheronctl organization switch to change your default organization.")
 		fmt.Println("\n")
+
+		fmt.Println("Hint: Set your active project with: spheronctl set project")
 
 	},
 }
@@ -70,7 +74,7 @@ spheronctl configure --secret=<YOUR_SECRET_API_KEY>
 
 func init() {
 
-    spheron.SetSpheronConfigFile()
+    SetSpheronConfigFile()
 
     // Add a new flag to the root command
     rootCmd.AddCommand(configureCmd)

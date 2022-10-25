@@ -26,14 +26,14 @@ var organizationCmd = &cobra.Command{
 		
 
 		// print all the project details
-		fmt.Println("--------PROJECT--------")
 		for _, project := range projects {
+			fmt.Println("--------PROJECT--------")
 			fmt.Println("Project ID: ", project.ID)
 			fmt.Println("Project Name: ", project.Name)
 			fmt.Println("Project URL: ", project.URL)
 			fmt.Println("Provider: ", project.Provider)
+			fmt.Println("-------/PROJECT--------")
 		}
-		fmt.Println("-------/PROJECT--------")
 
 		// get the overdue status of the organization, and print it
 		overdue, err := spheron.GetOrganizationOverdue(organizationID)
