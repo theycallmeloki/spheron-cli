@@ -73,7 +73,7 @@ The `cmd` /spheron folder is for logic that glues the Go-SDK to Spheronctl CLI, 
 
 [x] Project - Domains endpoints
 
-[ ] Project - Domain - Create (Post API) is not functional ATM, likely needs plumbing from OAuth 2.0 layers which is likely not currently present without a FE context 
+[ ] Project - Deployment - Create (Post API) is not functional ATM, likely needs plumbing from OAuth 2.0 layers which is likely not currently present without a FE context 
 
 [x] Project - Deployment endpoints
 

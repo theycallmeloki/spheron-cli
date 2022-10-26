@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/manifoldco/promptui"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
-	"github.com/manifoldco/promptui"
 	"github.com/theycallmeloki/spheron-cli/pkg/spheron"
 )
 
@@ -147,6 +147,44 @@ func SanitizeFixedSelect(items []string, prompt string) (string, error) {
 	return result, nil
 
 }
+
+var domainTypeList = []string{"Domain", "Subdomain"}
+
+// a function that switches case for a selected domain type value on the CLI
+func GetDomainTypeEnum(domainType string) string {
+	switch domainType {
+		case "Domain":
+			return "domain"
+		case "Subdomain":
+			return "subdomain"
+		default:
+			// TODO: Check if this is the right way to handle this
+			return "domain"
+	}
+}
+
+var protocolList = []string{"Arweave", "Skynet", "Filecoin", "Pinata"}
+
+// a function that switches case for a selected protocol value on the CLI
+func GetProtocolEnum(protocol string) string {
+	switch protocol {
+		case "Arweave":
+			return "arweave"
+		case "Skynet":
+			return "skynet"
+		case "Filecoin":
+			return "ipfs-filecoin"
+		case "Pinata":
+			return "ipfs-pinata"
+		default:
+			// TODO: Check if this is the right way to handle this
+			return "ipfs-pinata"
+	}
+}
+
+
+
+
 
 // is file exist function, used to look for existing config file
 func FileExists(path string) bool {

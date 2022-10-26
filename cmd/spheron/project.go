@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/theycallmeloki/spheron-cli/pkg/spheron"
 )
 
@@ -16,7 +17,10 @@ var projectCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		
 		if(ProjectId == "") {
-			ProjectId = SanitizeInput("Project ID: ")
+			ProjectId = viper.GetString("project")
+			if(ProjectId == "") {
+				ProjectId = SanitizeInput("Enter project ID: ")
+			}
 		}
 		
 		// fetch the project with the provided project ID and print them
@@ -71,6 +75,6 @@ var projectCmd = &cobra.Command{
 
 func init(){
 	rootCmd.AddCommand(projectCmd)
-
-	projectCmd.PersistentFlags().StringVarP(&ProjectId, "project", "p", "", "Project ID")
+	
+	projectCmd.Flags().StringVarP(&ProjectId, "project", "p", "", "Project ID")
 }
