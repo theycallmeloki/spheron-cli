@@ -183,8 +183,82 @@ func GetProtocolEnum(protocol string) string {
 }
 
 
+var frameworkList = []string{"No Framework - Simple Javascript App", "Create React App", "Vue", "Angular", "Next.js", "Preact", "Nuxt 2", "Docusaurus", "Hugo", "Eleventy", "Svelte", "Gatsby", "Sanity", "Ionic-React", "Vite", "Scully", "Stencil", "Brunch", "Ionic-Angular"}
 
+// a function that switches case for a selected framework value on the CLI
+func GetFrameworkEnum(framework string) string {
+	switch framework {
+		case "No Framework - Simple Javascript App":
+			return "static"
+		case "Create React App":
+			return "react"
+		case "Vue":
+			return "vue"
+		case "Angular":
+			return "angular"
+		case "Next.js":
+			return "next"
+		case "Preact":
+			return "preact"
+		case "Nuxt 2":
+			return "nuxt2"
+		case "Docusaurus":
+			return "docusaurus"
+		case "Hugo":
+			return "hugo"
+		case "Eleventy":
+			return "eleventy"
+		case "Svelte":
+			return "svelte"
+		case "Gatsby":
+			return "gatsby"
+		case "Sanity":
+			return "sanity"
+		case "Ionic-React":
+			return "ionicreact"
+		case "Vite":
+			return "vite"
+		case "Scully":
+			return "scully"
+		case "Stencil":
+			return "stencil"
+		case "Brunch":
+			return "brunch"
+		case "Ionic-Angular":
+			return "ionicangular"
+		default:
+			return "static"
+	}
+}
 
+var nodeList = []string{"Node V12 LTS", "Node V14 LTS", "Node V16 LTS"}
+
+// a function that switches case for a selected node value on the CLI
+func GetNodeEnum(node string) string {
+	switch node {
+		case "Node V12 LTS":
+			return "V_12"
+		case "Node V14 LTS":
+			return "V_14"
+		case "Node V16 LTS":
+			return "V_16"
+		default:
+			return "V_14"
+	}
+}
+
+// TODO: Populate this list extensively with all the possible values
+var providerList = []string{"Github"}
+
+// a function that switches case for a selected provider value on the CLI
+func GetProviderEnum(provider string) string {
+	switch provider {
+		case "Github":
+			return "GITHUB"
+		default:
+			return "GITHUB"
+	}
+}
 
 // is file exist function, used to look for existing config file
 func FileExists(path string) bool {

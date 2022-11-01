@@ -975,8 +975,8 @@ func VerifyDomain(projectId string, domainId string) (bool, error) {
 }
 
 // post deployment endpoint 
-func PostDeployment(projectId string, deployment CreateDeploymentPayload) (DeploymentDomain, error) {
-	url := SPHERON_BASE_URL + "/v1/project/" + projectId + "/deployments"
+func PostDeployment(deployment CreateDeploymentPayload) (DeploymentDomain, error) {
+	url := SPHERON_BASE_URL + "/v1/deployment"
 	method := "POST"
 
 	client := &http.Client {Timeout: 10 * time.Second}
