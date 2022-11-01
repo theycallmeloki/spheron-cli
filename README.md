@@ -81,8 +81,8 @@ The `cmd` /spheron folder is for logic that glues the Go-SDK to Spheronctl CLI, 
 
 [x] Refactor `utils` from `pkg` to `cmd`
 
-[ ] Seems every API provides a `error` bool and a `message` string, add support to all the responses to error out at a `pkg` level if these keys exist, panicking and exiting from the CLI
+[x] Seems every API provides a `error` bool and a `message` string, add support to all the responses to error out at a `pkg` level if these keys exist, panicking and exiting from the CLI
 
-[ ] Find out if we can stream logs with `--watch` depending on the topic ID for the deployment, seems likely it might be coming from a rabbitmq / kafka queue 
+[x] Find out if we can stream logs with `--watch` depending on the topic ID for the deployment, seems likely it might be coming from a rabbitmq / kafka queue 
 
 [ ] Not particularly sure if `set deployment` made sense, since if they made a new commit, that seems to be creating a seperate deployment, so when you redeploy and look for logs, it redeploys the previous commit and shows logs, thereby not making too much sense, moved behind a flag for now

@@ -21,8 +21,10 @@ type Scope struct {
 
 // Scope response 
 type ScopeResponse struct {
-	User          User            `json:"user"`
-	Organizations []Organizations `json:"organizations"`
+	User         	 User           `json:"user"`
+	Organizations 	[]Organizations `json:"organizations"`
+	Message     	string 			`json:"message,omitempty"`
+	Error      		bool			`json:"error,omitempty"`
 }
 
 // user struct 
@@ -113,7 +115,9 @@ type Users struct {
 
 // project count response struct
 type ProjectCountResponse struct {
-	Count string `json:"count"`
+	Count 		string 		`json:"count"`
+	Message     string 		`json:"message,omitempty"`
+	Error      	bool		`json:"error,omitempty"`
 }
 
 // organization projects response struct
@@ -249,7 +253,8 @@ type Projects struct {
 // organization overdue struct
 type OrganizationOverdueResponse struct {
 	Overdue         bool            `json:"overdue"`
-	Message         string          `json:"message"`
+	Message         string          `json:"message,omitempty"`
+	Error 		 	bool            `json:"error,omitempty"`
 	OverdueResponse OverdueResponse `json:"overdueResponse,omitempty"`
 	OverdueReasons  []string        `json:"overdueReasons,omitempty"`
 }
@@ -284,7 +289,9 @@ type RemoveMemberResponse struct {
 
 // coupons response struct
 type CouponsResponse struct {
-	Coupons []Coupons `json:"coupons"`
+	Coupons		[]Coupons   `json:"coupons"`
+	Message     string 		`json:"message,omitempty"`
+	Error      	bool		`json:"error,omitempty"`
 }
 
 // coupon struct
@@ -303,7 +310,9 @@ type Coupons struct {
 
 // organization member invite struct response
 type InvitesResponse struct {
-	Invites []Invites `json:"invites"`
+	Invites 	[]Invites   `json:"invites"`
+	Message    	string 		`json:"message,omitempty"`
+	Error      	bool		`json:"error,omitempty"`
 }
 
 // invites struct
@@ -390,6 +399,8 @@ type ProjectDeploymentCountResponse struct {
 	Successful int `json:"successful"`
 	Failed     int `json:"failed"`
 	Pending    int `json:"pending"`
+	Error  bool `json:"error,omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
 // project state response struct
@@ -410,11 +421,15 @@ type CreateEnvironmentVariablesPayload struct {
 // create environment variables response struct
 type CreateEnvironmentVariablesResponse struct {
 	EnvironmentVariables []EnvironmentVariables `json:"environmentVariables"`
+	Error  bool `json:"error,omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
 // update environment variables response struct
 type UpdateEnvironmentVariablesResponse struct {
 	Updated UpdatedEnvironmentVariable `json:"updated"`
+	Error  bool `json:"error,omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
 // updated struct (part of update environment variables response struct)
@@ -428,11 +443,15 @@ type UpdatedEnvironmentVariable struct {
 // delete environment variables response struct
 type DeleteEnvironmentVariablesResponse struct {
 	Success bool `json:"success"`
+	Error  	bool `json:"error,omitempty"`
+	Message string `json:"message,omitempty"`
 }
 	
 // deployment environment response struct
 type DeploymentEnvironmentsResponse struct {
-	Result []Result `json:"result"`
+	Result 		[]Result 	`json:"result"`
+	Error  		bool     	`json:"error,omitempty"`
+	Message 	string 		`json:"message,omitempty"`
 }
 
 // result struct (part of deployment environment response struct)

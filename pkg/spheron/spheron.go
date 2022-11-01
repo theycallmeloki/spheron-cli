@@ -41,6 +41,10 @@ func GetScope() (ScopeResponse, error) {
 
 	json.NewDecoder(res.Body).Decode(&scope)
 
+	if(scope.Error){
+		return scope, errors.New(scope.Message)
+	}
+
 	return scope, nil
 }
 
@@ -166,6 +170,10 @@ func GetOrganizationOverdue(organizationId string) (OrganizationOverdueResponse,
 
 	json.NewDecoder(res.Body).Decode(&overdue)
 
+	if(overdue.Error){
+		return overdue, errors.New(overdue.Message)
+	}
+
 	return overdue, nil
 }
 
@@ -194,6 +202,10 @@ func GetOrganizationProjectsCount(organizationId string) (ProjectCountResponse, 
 	defer res.Body.Close()
 
 	json.NewDecoder(res.Body).Decode(&projectsCount)
+
+	if(projectsCount.Error){
+		return projectsCount, errors.New(projectsCount.Message)
+	}
 
 	return projectsCount, nil
 }
@@ -228,6 +240,10 @@ func DeleteOrganizationMember(organizationId string, memberId string) (DeleteOrg
 
 	json.NewDecoder(res.Body).Decode(&deleteOrganizationMember)
 
+	if(deleteOrganizationMember.Error) {
+		return deleteOrganizationMember, errors.New(deleteOrganizationMember.Message)
+	}
+
 	return deleteOrganizationMember, nil
 }
 
@@ -257,6 +273,10 @@ func GetOrganizationCoupons(organizationId string) ([] Coupons, error) {
 
 	json.NewDecoder(res.Body).Decode(&coupons)
 
+	if(coupons.Error){
+		return coupons.Coupons, errors.New(coupons.Message)
+	}
+
 	return coupons.Coupons, nil
 }
 
@@ -285,6 +305,10 @@ func GetOrganizationInvites(organizationId string) ([] Invites, error) {
 	defer res.Body.Close()
 
 	json.NewDecoder(res.Body).Decode(&invites)
+
+	if(invites.Error){
+		return invites.Invites, errors.New(invites.Message)
+	}
 
 	return invites.Invites, nil
 }
@@ -413,6 +437,10 @@ func GetProjectDeploymentsCount(projectId string) (ProjectDeploymentCountRespons
 
 	json.NewDecoder(res.Body).Decode(&deploymentsCount)
 
+	if(deploymentsCount.Error) {
+		return deploymentsCount, errors.New(deploymentsCount.Message)
+	}
+
 	return deploymentsCount, nil
 }
 
@@ -449,6 +477,10 @@ func PostEnvironmentVariables(projectId string, environmentVariables [] Environm
 
 	json.NewDecoder(res.Body).Decode(&environmentVariablesResponse)
 
+	if(environmentVariablesResponse.Error) {
+		return environmentVariablesResponse.EnvironmentVariables, errors.New(environmentVariablesResponse.Message)
+	}
+
 	return environmentVariablesResponse.EnvironmentVariables, nil
 }
 
@@ -483,6 +515,10 @@ func PutEnvironmentVariable(projectId string, environmentVariableId string, envi
 
 	json.NewDecoder(res.Body).Decode(&environmentVariableResponse)
 
+	if(environmentVariableResponse.Error) {
+		return environmentVariableResponse.Updated, errors.New(environmentVariableResponse.Message)
+	}
+
 	return environmentVariableResponse.Updated, nil
 }
 
@@ -514,6 +550,12 @@ func DeleteEnvironmentVariable(projectId string, environmentVariableId string) (
 
 	json.NewDecoder(res.Body).Decode(&environmentVariableResponse)
 
+	if(environmentVariableResponse.Success) {
+		return environmentVariableResponse.Success, nil
+	} else {
+		return environmentVariableResponse.Success, errors.New(environmentVariableResponse.Message)
+	}
+
 	return environmentVariableResponse.Success, nil
 }
 
@@ -544,6 +586,10 @@ func GetDeploymentEnvironmentVariables(projectId string) ([] DeploymentEnvironme
 	defer res.Body.Close()
 
 	json.NewDecoder(res.Body).Decode(&deploymentEnvironmentResponse)
+
+	if(deploymentEnvironmentResponse.Error) {
+		return deploymentEnvironments, errors.New(deploymentEnvironmentResponse.Message)
+	}
 
 	for _, deploymentEnvironment := range deploymentEnvironmentResponse.Result {
 		createdDeploymentEnvironment := DeploymentEnvironment {
@@ -1201,10 +1247,6 @@ func UploadFiles(organizationId string, projectName string, protocol string, fil
 			return "", err
 		}
 		part.Write(file.Fcontent)
-		// _, err = io.Copy(part, file.fcontent)
-		// if err != nil {
-		// 	return false, err
-		// }
 	}
 	err := writer.Close()
 	if err != nil {
