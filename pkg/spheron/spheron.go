@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"mime/multipart"
 	"net/http"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -1184,4 +1186,58 @@ func GetFrameworkSuggestions(owner string, branch string, repo string, providerN
 	}
 
 	return frameworkResponse.SuggestedFramework, nil
+}
+
+// upload built files endpoint
+func UploadFiles(organizationId string, projectName string, protocol string, files []FileContent) (string, error) {
+	url := SPHERON_BASE_URL + "/v1/deployment/upload?organization=" + organizationId + "&project=" + projectName + "&protocol=" + protocol
+	method := "POST"
+
+	payload := &bytes.Buffer{}
+	writer := multipart.NewWriter(payload)
+	for _, file := range files {
+		part, err := writer.CreateFormFile(file.Ftype, filepath.Base(file.Fname))
+		if err != nil {
+			return "", err
+		}
+		part.Write(file.Fcontent)
+		// _, err = io.Copy(part, file.fcontent)
+		// if err != nil {
+		// 	return false, err
+		// }
+	}
+	err := writer.Close()
+	if err != nil {
+		return "", err
+	}
+
+	client := &http.Client {Timeout: 10 * time.Second}
+
+	req, err := http.NewRequest(method, url, payload)
+
+	var uploadResponse UploadFilesDeploymentResponse
+
+	if err != nil {
+		fmt.Println(err)
+		return uploadResponse.SitePreview, err
+	}
+
+	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return uploadResponse.SitePreview, err
+	}
+	defer res.Body.Close()
+
+	json.NewDecoder(res.Body).Decode(&uploadResponse)	
+
+	if(uploadResponse.Error) {
+		return uploadResponse.SitePreview, errors.New(uploadResponse.Message)
+	}
+
+	return uploadResponse.SitePreview, nil
+
 }

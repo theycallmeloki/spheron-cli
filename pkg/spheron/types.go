@@ -711,3 +711,19 @@ type SuggestedFrameworkResponse struct {
 	Message string `json:"message,omitempty"`
 	Error bool `json:"error,omitempty"`
 }
+	
+type UploadFilesDeploymentResponse struct {
+	Success      bool   `json:"success"`
+	Message      string `json:"message"`
+	DeploymentID string `json:"deploymentId"`
+	ProjectID    string `json:"projectId"`
+	SitePreview  string `json:"sitePreview"`
+	Error 		 bool   `json:"error,omitempty"`
+}
+
+
+type FileContent struct {
+	Fname string 
+	Ftype string
+	Fcontent []byte
+}
