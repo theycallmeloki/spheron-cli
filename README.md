@@ -67,7 +67,7 @@ The `cmd` /spheron folder is for logic that glues the Go-SDK to Spheronctl CLI, 
 
 [x] `spheronctl env push --envfile=.env` to automatically push deployment environment variables from `.env` to spheron
 
-[ ] `spheronctl env pull --envfilepath=.env.local` to automatically pull down local environment variables from spheron
+[x] `spheronctl env pull --envfile=.env.local` to automatically pull down local environment variables from spheron
 
 [x] Project - Deployment Environment endpoints
 
