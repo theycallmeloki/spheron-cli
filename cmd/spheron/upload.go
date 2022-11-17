@@ -96,7 +96,21 @@ var uploadCmd = &cobra.Command{
 		}
 
 		fmt.Println("Uploaded ", len(files), " files successfully!")
-		fmt.Println("Site Preview: ", uploaded)
+
+		domains, err := spheron.GetDomains(uploaded.ProjectID)
+
+		if err != nil {
+			panic(err)
+		}
+
+		// loop over subdomains and print them out
+
+		for _, domain := range domains {
+			fmt.Println("--------Domain--------")
+			fmt.Println("Domain Type: ", domain.Type)
+			fmt.Println("Link: ", domain.Name)
+			fmt.Println("-------/Domain--------")
+		}
 
 	},
 }

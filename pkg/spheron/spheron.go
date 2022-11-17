@@ -1235,9 +1235,11 @@ func GetFrameworkSuggestions(owner string, branch string, repo string, providerN
 }
 
 // upload built files endpoint
-func UploadFiles(organizationId string, projectName string, protocol string, files []FileContent) (string, error) {
+func UploadFiles(organizationId string, projectName string, protocol string, files []FileContent) (UploadFilesDeploymentResponse, error) {
 	url := SPHERON_BASE_URL + "/v1/deployment/upload?organization=" + organizationId + "&project=" + projectName + "&protocol=" + protocol
 	method := "POST"
+
+	var uploadResponse UploadFilesDeploymentResponse
 
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
@@ -1247,24 +1249,22 @@ func UploadFiles(organizationId string, projectName string, protocol string, fil
 		reducedFileName := strings.Join(reducedFolderParts, string(os.PathSeparator))
 		part, err := writer.CreateFormFile(file.Ftype, reducedFileName)
 		if err != nil {
-			return "", err
+			return uploadResponse, err
 		}
 		part.Write(file.Fcontent)
 	}
 	err := writer.Close()
 	if err != nil {
-		return "", err
+		return uploadResponse, err
 	}
 
 	client := &http.Client {Timeout: 10 * time.Second}
 
 	req, err := http.NewRequest(method, url, payload)
 
-	var uploadResponse UploadFilesDeploymentResponse
-
 	if err != nil {
 		fmt.Println(err)
-		return uploadResponse.SitePreview, err
+		return uploadResponse, err
 	}
 
 	req.Header.Add("Authorization", "Bearer " + viper.GetString("secret"))
@@ -1273,16 +1273,16 @@ func UploadFiles(organizationId string, projectName string, protocol string, fil
 	res, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err)
-		return uploadResponse.SitePreview, err
+		return uploadResponse, err
 	}
 	defer res.Body.Close()
 
 	json.NewDecoder(res.Body).Decode(&uploadResponse)	
 
 	if(uploadResponse.Error) {
-		return uploadResponse.SitePreview, errors.New(uploadResponse.Message)
+		return uploadResponse, errors.New(uploadResponse.Message)
 	}
 
-	return uploadResponse.SitePreview, nil
+	return uploadResponse, nil
 
 }
