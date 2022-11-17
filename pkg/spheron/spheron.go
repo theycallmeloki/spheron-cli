@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"mime/multipart"
 	"net/http"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -1242,7 +1241,7 @@ func UploadFiles(organizationId string, projectName string, protocol string, fil
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	for _, file := range files {
-		part, err := writer.CreateFormFile(file.Ftype, filepath.Base(file.Fname))
+		part, err := writer.CreateFormFile(file.Ftype, file.Fname)
 		if err != nil {
 			return "", err
 		}

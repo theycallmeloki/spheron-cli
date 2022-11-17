@@ -68,7 +68,7 @@ var uploadCmd = &cobra.Command{
 
 				// add the file to FileContent
 				files = append(files, spheron.FileContent{
-					Fname: info.Name(),
+					Fname: path,
 					Ftype: fileType,
 					Fcontent: fileContent,
 				})
