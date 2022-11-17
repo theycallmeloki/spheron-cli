@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"os"
 
 	"github.com/spf13/viper"
 )
@@ -1241,7 +1242,10 @@ func UploadFiles(organizationId string, projectName string, protocol string, fil
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	for _, file := range files {
-		part, err := writer.CreateFormFile(file.Ftype, file.Fname)
+		folderParts := strings.Split(file.Fname, string(os.PathSeparator))
+		_, reducedFolderParts := folderParts[0], folderParts[1:]
+		reducedFileName := strings.Join(reducedFolderParts, string(os.PathSeparator))
+		part, err := writer.CreateFormFile(file.Ftype, reducedFileName)
 		if err != nil {
 			return "", err
 		}
